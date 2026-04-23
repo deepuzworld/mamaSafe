@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "public": false,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "installCommand": "cd frontend && npm install",
+  "devCommand": "cd frontend && npm run dev",
+  "framework": "nextjs",
+  "outputDirectory": "frontend/.next",
+  "rewrites": [
+    {
+      "source": "/core-api/:path*",
+      "destination": "https://your-backend-url.railway.app/api/:path*"
+    }
+  ]
+}
