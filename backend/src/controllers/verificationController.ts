@@ -112,7 +112,7 @@ export const processFrame = async (req: Request, res: Response) => {
         res.status(500).json({ 
             success: false, 
             message: `AI Connect Failure: ${error.message || 'Unknown Error'}`,
-            hint: 'Ensure AI_SERVICE_URL is set correctly in Railway variables.' 
+            hint: `Make sure AI_SERVICE_URL is set to your Python service URL (Current attempt: ${AI_URL})` 
         });
     }
 };
