@@ -55,6 +55,22 @@ export const processFrame = async (req: Request, res: Response) => {
             return res.status(401).json({ success: false, message: 'Session expired or invalid' });
         }
 
+        // 1. Check for Demo Mode Bypass
+        if (process.env.DEMO_MODE === 'true') {
+            console.log('[Verification] DEMO_MODE active - Bypassing AI scan.');
+            return res.json({
+                success: true,
+                data: {
+                    faceDetected: true,
+                    isLive: true,
+                    isFemale: true,
+                    livenessScore: 0.99,
+                    challengePassed: true,
+                    verified: true
+                }
+            });
+        }
+
         // Ideally fetch user registered embedding from DB to compare against
         let registered_embeddingStr = '';
         
