@@ -124,6 +124,12 @@ export default function FaceVerificationPage() {
                         method: 'POST',
                         body: formData
                     });
+                    if (!res.ok) {
+                        const text = await res.text();
+                        console.error('Server response error:', text);
+                        setMessage(`Verification Error: ${res.status}`);
+                        return;
+                    }
                     const data = await res.json();
                     
                     if (data.success && data.data) {
