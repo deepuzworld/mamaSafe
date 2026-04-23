@@ -27,7 +27,7 @@ export const startVerificationSession = async (req: Request, res: Response) => {
         sessions[sessionId] = {
             userId,
             challenge,
-            expiresAt: Date.now() + 120000 // 2 mins
+            expiresAt: Date.now() + 600000 // 10 mins (Extended for production reliability)
         };
 
         res.json({
@@ -52,8 +52,13 @@ export const processFrame = async (req: Request, res: Response) => {
         }
 
         const session = sessions[sessionId];
-        if (!session || session.expiresAt < Date.now()) {
-            return res.status(401).json({ success: false, message: 'Session expired or invalid' });
+        if (!session) {
+            console.error(`[Verification] Session NOT FOUND: ${sessionId}`);
+            return res.status(401).json({ success: false, message: 'Session ID not recognized. Refresh page.' });
+        }
+        if (session.expiresAt < Date.now()) {
+            console.error(`[Verification] Session EXPIRED: ${sessionId}`);
+            return res.status(401).json({ success: false, message: 'Session expired. Please restart the scan.' });
         }
 
         // 1. Check for Demo Mode Bypass
