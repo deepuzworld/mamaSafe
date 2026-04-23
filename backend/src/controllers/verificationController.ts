@@ -68,9 +68,10 @@ export const processFrame = async (req: Request, res: Response) => {
             form.append('registered_embedding', registered_embeddingStr);
         }
 
-        console.log(`[Verification] Processing frame for session ${sessionId}, expected: ${expected_challenge}`);
+        const AI_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
+        console.log(`[Verification] Processing frame for session ${sessionId}, expected: ${expected_challenge} via AI: ${AI_URL}`);
 
-        const aiResponse = await axios.post('http://127.0.0.1:8000/ai/face/analyze', form, {
+        const aiResponse = await axios.post(`${AI_URL}/ai/face/analyze`, form, {
             headers: {
                 ...form.getHeaders()
             }
