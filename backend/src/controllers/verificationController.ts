@@ -11,6 +11,7 @@ const sessions: Record<string, { userId: string, challenge: string[], expiresAt:
 
 export const startVerificationSession = async (req: Request, res: Response) => {
     try {
+        console.log(`[Verification] Starting session for user: ${req.body.userId}`);
         const { userId } = req.body;
         if (!userId) {
             return res.status(400).json({ success: false, message: 'userId required' });
