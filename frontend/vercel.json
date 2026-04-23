@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/core-api/:path*",
-      "destination": "https://your-backend-url.railway.app/api/:path*"
+      "destination": "https://mamasafe-production.up.railway.app/api/:path*"
     }
   ]
 }
