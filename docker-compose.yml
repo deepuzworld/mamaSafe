@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: mamasafe_db
+    environment:
+      POSTGRES_USER: mamasafe_user
+      POSTGRES_PASSWORD: mamasafe_password
+      POSTGRES_DB: mamasafe_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  kannel:
+    image: marksugar/kannel:latest
+    container_name: mamasafe_kannel
+    volumes:
+      - ./docker/kannel/kannel.conf:/etc/kannel/kannel.conf
+      - ./docker/kannel/logs:/tmp
+    ports:
+      - "13013:13013"
+      - "13000:13000"
+    restart: unless-stopped
+    command: ["bearerbox", "/etc/kannel/kannel.conf"]
+
+  freeswitch:
+    image: safisystems/freeswitch:latest
+    container_name: mamasafe_freeswitch
+    ports:
+      - "8021:8021" # Event Socket
+      - "5060:5060/udp" # SIP
+    environment:
+      - FS_PASSWORD=ClueCon
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

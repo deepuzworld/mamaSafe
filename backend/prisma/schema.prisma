@@ -1,0 +1,270 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  userId             String            @id @default(uuid())
+  fullName           String
+  email              String            @unique
+  phoneNumber        String?
+  passwordHash       String
+  role               String
+  faceVerifyStatus   Boolean           @default(false)
+  isAnonymous        Boolean           @default(false)
+  mustResetPassword  Boolean           @default(false)
+  currentMoodScore   Decimal?
+  communityPseudonym String?
+  communityBio       String?
+  avatarUrl          String?
+  createdAt          DateTime          @default(now())
+  otpCreatedAt       DateTime?
+  alerts             Alert[]
+  analysisReqs       AnalysisRequest[]
+  posts              CommunityPost[]
+  consultations      Consultation[]
+  expert             Expert?
+  faceVerification   FaceVerification?
+  journalEntries     JournalEntry[]
+  modAudits          ModAudit[]
+  moodLogs           MoodLog[]
+  partnerBridges     PartnerBridge[]   @relation("PartnerBridge")
+  motherBridges      PartnerBridge[]   @relation("MotherBridge")
+  comments           PostComment[]
+  supports           PostSupport[]
+  profile            Profile?
+  redButtonEvents    RedButtonEvent[]
+  redFlagLogs        RedFlagLog[]
+  sleepLogs          SleepLog[]
+  tasks              TaskTracker[]
+}
+
+model Profile {
+  profileId        String    @id @default(uuid())
+  userId           String    @unique
+  firstPregnancy   Boolean
+  historyOfBipolar Boolean
+  babyBirthDate    DateTime?
+  currentCondition String?
+  expertNotes      String?
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model FaceVerification {
+  verificationId     String    @id @default(uuid())
+  userId             String    @unique
+  faceIoId           String?
+  verificationStatus String
+  verifiedAt         DateTime?
+  user               User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model MoodLog {
+  moodId    String   @id @default(uuid())
+  userId    String
+  moodScore Int
+  notes     String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model SleepLog {
+  sleepId      String   @id @default(uuid())
+  userId       String
+  hoursSlept   Float
+  sleepQuality Int
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model JournalEntry {
+  journalId      String   @id @default(uuid())
+  userId         String
+  entryType      String
+  content        String
+  createdAt      DateTime @default(now())
+  sentimentScore Decimal?
+  sleepHours     Decimal?
+  user           User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model AnalysisRequest {
+  requestId      String          @id @default(uuid())
+  userId         String
+  sourceType     String
+  sourceId       String
+  status         String
+  createdAt      DateTime        @default(now())
+  user           User            @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  analysisResult AnalysisResult?
+}
+
+model AnalysisResult {
+  analysisId      String          @id @default(uuid())
+  requestId       String          @unique
+  riskScore       Float?
+  detectedFlags   String?
+  createdAt       DateTime        @default(now())
+  analysisRequest AnalysisRequest @relation(fields: [requestId], references: [requestId], onDelete: Cascade)
+}
+
+model Alert {
+  alertId   String   @id @default(uuid())
+  userId    String
+  riskLevel String
+  message   String
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model CommunityPost {
+  postId      String           @id @default(uuid())
+  userId      String
+  category    String?
+  title       String?
+  body        String?
+  isFlagged   Boolean          @default(false)
+  pseudonym   String?
+  content     String?
+  createdAt   DateTime         @default(now())
+  user        User             @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  modAudits   ModAudit[]
+  attachments PostAttachment[]
+  comments    PostComment[]
+  supports    PostSupport[]
+}
+
+model PostAttachment {
+  attachmentId String        @id @default(uuid())
+  postId       String
+  fileUrl      String
+  fileType     String
+  createdAt    DateTime      @default(now())
+  post         CommunityPost @relation(fields: [postId], references: [postId], onDelete: Cascade)
+}
+
+model PostComment {
+  commentId     String        @id @default(uuid())
+  postId        String
+  userId        String
+  content       String
+  createdAt     DateTime      @default(now())
+  user          User          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  communityPost CommunityPost @relation(fields: [postId], references: [postId], onDelete: Cascade)
+}
+
+model PostSupport {
+  supportId     String        @id @default(uuid())
+  postId        String
+  userId        String
+  createdAt     DateTime      @default(now())
+  user          User          @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  communityPost CommunityPost @relation(fields: [postId], references: [postId], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model Expert {
+  expertId       String         @id @default(uuid())
+  userId         String         @unique
+  specialization String?
+  licenseNo      String?        @unique
+  bio            String?
+  isVerified     Boolean        @default(false)
+  availability   String?
+  consultations  Consultation[]
+  user           User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model Consultation {
+  meetingId      String   @id @default(uuid())
+  userId         String
+  expertId       String
+  dateTime       DateTime
+  status         String
+  clinicalNotes  String?
+  patientComment String?
+  expert         Expert   @relation(fields: [expertId], references: [expertId], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([expertId, dateTime])
+}
+
+model PartnerBridge {
+  bridgeId          String  @id @default(uuid())
+  motherUserId      String
+  partnerUserId     String?
+  partnerEmail      String
+  accessLevel       String
+  alertNotification Boolean @default(true)
+  partnerUser       User?   @relation("PartnerBridge", fields: [partnerUserId], references: [userId], onDelete: Cascade)
+  motherUser        User    @relation("MotherBridge", fields: [motherUserId], references: [userId], onDelete: Cascade)
+}
+
+model RedFlagLog {
+  alertId       String   @id @default(uuid())
+  userId        String
+  triggerSource String
+  severity      String
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model RedButtonEvent {
+  eventId         String   @id @default(uuid())
+  userId          String
+  triggeredAt     DateTime @default(now())
+  emergencyStatus String
+  user            User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model TaskTracker {
+  taskId      String   @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  isComplete  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model ResourceHub {
+  resourceId String   @id @default(uuid())
+  title      String
+  content    String
+  category   String
+  type       String
+  thumbnail  String?
+  url        String?
+  authorName String?
+  authorRole String?
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model ModAudit {
+  auditId     String        @id @default(uuid())
+  postId      String
+  adminId     String
+  actionTaken String
+  reason      String?
+  timestamp   DateTime      @default(now())
+  admin       User          @relation(fields: [adminId], references: [userId], onDelete: Cascade)
+  post        CommunityPost @relation(fields: [postId], references: [postId], onDelete: Cascade)
+}
+
+model RemovedExpert {
+  id             String   @id @default(uuid())
+  fullName       String
+  email          String
+  specialization String?
+  licenseNo      String?
+  removedAt      DateTime @default(now())
+}
