@@ -28,3 +28,21 @@ MamaSafe is a comprehensive, multi-tiered digital tele-health platform designed 
 2. **Partners:** Connected users who receive synced insights and alerts to better support their spouses.
 3. **Medical Experts:** Healthcare providers who manage consultations and contribute educational vlogs and blogs.
 4. **Admins:** System overseers who manage user onboarding, verify experts, and moderate community content.
+
+
+The short answer is: No, it will not be visible or functional yet.
+
+GitHub Pages is designed for "Static Sites" (simple HTML/CSS/JS). Because MamaSafe is a complex Full-Stack Application, it cannot run directly on GitHub Pages for several reasons:
+
+Monorepo Structure: Your code is organized into frontend, backend, and ai_service. GitHub Pages expects a single index.html at the very root of the repository, which isn't there.
+Next.js Requirements: The frontend needs a "Build" step (next build) to generate the pages.
+Missing Backend: Even if the frontend appeared, features like Login, Registration, and Face Verification would fail because they require your Node.js Server and Python AI Service to be running 24/7 on a platform that supports "Compute" (like Vercel, Heroku, or Render).
+How to make it visible online (Recommended Step):
+If you want to show your project to others, the best approach is:
+
+Frontend: Deploy the frontend folder to Vercel. It is free and specifically designed for Next.js.
+Backend: Deploy the backend and ai_service to a platform like Render.com or Railway.app, which supports Node.js and Databases.
+What you can do right now:
+I've already updated the README and project structure so that if you run it locally, it works perfectly. For your Academic Report, I recommend taking screenshots or a video of it running on your local machine, as that proves the full-stack logic (including the AI) is operational!
+
+Would you like me to help you create a specific "Deployment Guide" for your report?
