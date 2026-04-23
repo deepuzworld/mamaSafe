@@ -107,9 +107,13 @@ export const processFrame = async (req: Request, res: Response) => {
             success: true,
             data: results
         });
-    } catch (error) {
-        console.error('AI Processing Error:', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error connecting to AI Microservice' });
+    } catch (error: any) {
+        console.error('AI Processing Error:', error.message || error);
+        res.status(500).json({ 
+            success: false, 
+            message: `AI Connect Failure: ${error.message || 'Unknown Error'}`,
+            hint: 'Ensure AI_SERVICE_URL is set correctly in Railway variables.' 
+        });
     }
 };
 
