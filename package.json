@@ -2,12 +2,16 @@
   "name": "mamasafe-monorepo",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "frontend:dev": "cd frontend && npm run dev",
-    "frontend:build": "cd frontend && npm run build",
-    "backend:dev": "cd backend && npm run dev",
-    "backend:build": "cd backend && npm run build",
-    "backend:start": "cd backend && npm start",
+    "frontend:dev": "npm run dev -w frontend",
+    "frontend:build": "npm run build -w frontend",
+    "backend:dev": "npm run dev -w backend",
+    "backend:build": "npm run build -w backend",
+    "backend:start": "npm run start -w backend",
     "start": "npm run backend:start"
   }
 }
