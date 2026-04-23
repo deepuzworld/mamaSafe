@@ -323,6 +323,22 @@ export default function FaceVerificationPage() {
                             </button>
                         )}
                     </div>
+                    <div className="mt-8 pt-8 border-t border-emerald-50">
+                        <button 
+                            onClick={async () => {
+                                try {
+                                    const res = await fetch('/core-api/health');
+                                    const data = await res.json();
+                                    alert(`Backend Online: ${data.status}`);
+                                } catch (e: any) {
+                                    alert(`Backend Offline: ${e.message}`);
+                                }
+                            }}
+                            className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-emerald-500 transition-colors"
+                        >
+                            Diagnostic: Test Link
+                        </button>
+                    </div>
                 </div>
             </motion.div>
         </div>
