@@ -27,7 +27,7 @@ import {
     Home
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useRef } from 'react';
+import { useRef, Suspense } from 'react';
 interface Comment {
     commentId: string;
     postId: string;
@@ -101,6 +101,18 @@ function FeedVideo({ src }: { src: string }) {
 }
 
 export default function CommunityPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+                <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+        }>
+            <CommunityContent />
+        </Suspense>
+    );
+}
+
+function CommunityContent() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [newPostContent, setNewPostContent] = useState('');
     const [isPosting, setIsPosting] = useState(false);
