@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:5000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://backend-production-5d43.up.railway.app';
     return [
       {
         source: '/core-api/:path*',

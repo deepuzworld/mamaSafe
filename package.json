@@ -14,5 +14,8 @@
     "backend:start": "npm run start -w backend",
     "build": "npm run backend:build",
     "start": "npm run backend:start"
+  },
+  "dependencies": {
+    "@railway/cli": "^4.42.0"
   }
 }

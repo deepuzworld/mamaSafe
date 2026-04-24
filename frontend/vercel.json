@@ -5,9 +5,9 @@
   "trailingSlash": false,
   "framework": "nextjs",
   "rewrites": [
-    {
-      "source": "/core-api/:path*",
-      "destination": "https://mamasafe-production.up.railway.app/api/:path*"
-    }
+      {
+        source: "/core-api/:path*",
+        destination: "https://backend-production-5d43.up.railway.app/api/:path*"
+      }
   ]
 }
