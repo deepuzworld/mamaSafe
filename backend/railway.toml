@@ -1,0 +1,16 @@
+# Railway Configuration for MamaSafe Backend
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install && npx prisma generate && npx tsc"
+
+[deploy]
+startCommand = "node dist/app.js"
+# Automatically syncs the database schema before every deployment
+# Note: npx prisma db push is used here for rapid development sync
+preDeployCommand = "npx prisma generate && npx prisma db push"
+
+[service]
+# Ensure healthchecks pass if Railway expects a specific path
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+healthcheckInterval = 30

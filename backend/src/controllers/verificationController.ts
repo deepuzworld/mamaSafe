@@ -43,6 +43,7 @@ export const startVerificationSession = async (req: Request, res: Response) => {
 };
 
 export const processFrame = async (req: Request, res: Response) => {
+    const AI_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
     try {
         const file = req.file;
         const { sessionId, expected_challenge } = req.body;
@@ -90,7 +91,6 @@ export const processFrame = async (req: Request, res: Response) => {
             form.append('registered_embedding', registered_embeddingStr);
         }
 
-        const AI_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
         console.log(`[Verification] Processing frame for session ${sessionId}, expected: ${expected_challenge} via AI: ${AI_URL}`);
 
         const aiResponse = await axios.post(`${AI_URL}/ai/face/analyze`, form, {

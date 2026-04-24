@@ -6,14 +6,20 @@ import time
 
 app = FastAPI(title="MamaSafe Light AI Face Verification")
 
-# Initialize MediaPipe Face Mesh (Lighter & Faster)
-mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(
-    max_num_faces=1,
-    refine_landmarks=True,
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
+import os
+
+# Initialize MediaPipe Tasks (Modern API for Python 3.13 compatibility)
+model_path = os.path.join(os.path.dirname(__file__), 'face_landmarker.task')
+base_options = python.BaseOptions(model_asset_path=model_path)
+options = vision.FaceLandmarkerOptions(
+    base_options=base_options,
+    output_face_blendshapes=True,
+    output_facial_transformation_matrixes=True,
+    num_faces=1
 )
+landmarker = vision.FaceLandmarker.create_from_options(options)
 
 @app.get("/")
 def health_check():
@@ -32,14 +38,15 @@ async def analyze_face(
         if img is None:
             return {"error": "Invalid image"}
 
-        # Process with MediaPipe
+        # Process with MediaPipe Tasks
         rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        results = face_mesh.process(rgb_img)
+        mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_img)
+        detection_result = landmarker.detect(mp_image)
 
-        if not results.multi_face_landmarks:
+        if not detection_result.face_landmarks:
             return {"faceDetected": False, "verified": False}
 
-        landmarks = results.multi_face_landmarks[0].landmark
+        landmarks = detection_result.face_landmarks[0]
         
         # Simple Liveness Check: Pupil Dilatation & Pose (Simulated with Landmarks)
         # In light mode, we use landmark stability as a proxy for a live person
