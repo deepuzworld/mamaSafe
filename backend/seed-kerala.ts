@@ -1,11 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import process from 'process';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('--- Wiping all existing data ---');
-  
+
   // Delete in order to satisfy foreign key constraints
   await prisma.modAudit.deleteMany();
   await prisma.postSupport.deleteMany();
@@ -114,32 +115,32 @@ async function main() {
 
     // Add Face Verification
     await prisma.faceVerification.create({
-        data: {
-            userId: user.userId,
-            verificationStatus: 'verified',
-            verifiedAt: new Date()
-        }
+      data: {
+        userId: user.userId,
+        verificationStatus: 'verified',
+        verifiedAt: new Date()
+      }
     });
   }
 
   // 2.5 Removed/Archived Experts
   await prisma.removedExpert.createMany({
-      data: [
-          {
-              fullName: 'Dr. Jacob Mathew',
-              email: 'jacob.m@oldhealth.com',
-              specialization: 'General Practitioner',
-              licenseNo: 'KMC-1980-001',
-              removedAt: new Date(Date.now() - 86400000 * 15) // 15 days ago
-          },
-          {
-              fullName: 'Dr. Priya Raj',
-              email: 'priya.r@maternalcare.com',
-              specialization: 'Obstetrics',
-              licenseNo: 'KMC-1995-101',
-              removedAt: new Date(Date.now() - 86400000 * 5) // 5 days ago
-          }
-      ]
+    data: [
+      {
+        fullName: 'Dr. Jacob Mathew',
+        email: 'jacob.m@oldhealth.com',
+        specialization: 'General Practitioner',
+        licenseNo: 'KMC-1980-001',
+        removedAt: new Date(Date.now() - 86400000 * 15) // 15 days ago
+      },
+      {
+        fullName: 'Dr. Priya Raj',
+        email: 'priya.r@maternalcare.com',
+        specialization: 'Obstetrics',
+        licenseNo: 'KMC-1995-101',
+        removedAt: new Date(Date.now() - 86400000 * 5) // 5 days ago
+      }
+    ]
   });
 
   // 3. Mothers & Partners (Pairs with Bridges)
@@ -200,84 +201,84 @@ async function main() {
 
     // Generate 5 past days of health data
     for (let i = 0; i < 5; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() - (4 - i));
-        
-        await prisma.moodLog.create({
-            data: {
-                userId: mUser.userId,
-                moodScore: Math.floor(Math.random() * 4) + 5, // 5 to 8
-                notes: `Feeling okay, day ${i+1}`,
-                createdAt: date
-            }
-        });
+      const date = new Date();
+      date.setDate(date.getDate() - (4 - i));
 
-        await prisma.sleepLog.create({
-            data: {
-                userId: mUser.userId,
-                hoursSlept: Math.floor(Math.random() * 3) + 5, // 5 to 7
-                sleepQuality: Math.floor(Math.random() * 5) + 5,
-                createdAt: date
-            }
-        });
+      await prisma.moodLog.create({
+        data: {
+          userId: mUser.userId,
+          moodScore: Math.floor(Math.random() * 4) + 5, // 5 to 8
+          notes: `Feeling okay, day ${i + 1}`,
+          createdAt: date
+        }
+      });
+
+      await prisma.sleepLog.create({
+        data: {
+          userId: mUser.userId,
+          hoursSlept: Math.floor(Math.random() * 3) + 5, // 5 to 7
+          sleepQuality: Math.floor(Math.random() * 5) + 5,
+          createdAt: date
+        }
+      });
     }
 
     // Add tasks for the partner
     await prisma.taskTracker.createMany({
-        data: [
-            { userId: pUser.userId, title: 'Buy prenatal vitamins', isComplete: true, createdAt: new Date(Date.now() - 86400000 * 2) },
-            { userId: pUser.userId, title: 'Set up the nursery space', isComplete: false },
-            { userId: pUser.userId, title: 'Accompany mom to Dr. appointment', isComplete: false }
-        ]
+      data: [
+        { userId: pUser.userId, title: 'Buy prenatal vitamins', isComplete: true, createdAt: new Date(Date.now() - 86400000 * 2) },
+        { userId: pUser.userId, title: 'Set up the nursery space', isComplete: false },
+        { userId: pUser.userId, title: 'Accompany mom to Dr. appointment', isComplete: false }
+      ]
     });
 
     // Add alerts visible to partner
     await prisma.alert.create({
-        data: {
-            userId: mUser.userId,
-            riskLevel: 'warning',
-            message: 'Sleep has been consistently low for the past few days. Partner notified.',
-            resolved: false,
-            createdAt: new Date()
-        }
+      data: {
+        userId: mUser.userId,
+        riskLevel: 'warning',
+        message: 'Sleep has been consistently low for the past few days. Partner notified.',
+        resolved: false,
+        createdAt: new Date()
+      }
     });
 
     // FaceVerification for Mother & Partner
     await prisma.faceVerification.create({
-        data: {
-            userId: mUser.userId,
-            verificationStatus: 'verified',
-            verifiedAt: new Date()
-        }
+      data: {
+        userId: mUser.userId,
+        verificationStatus: 'verified',
+        verifiedAt: new Date()
+      }
     });
 
     await prisma.faceVerification.create({
-        data: {
-            userId: pUser.userId,
-            verificationStatus: Math.random() > 0.8 ? 'pending' : 'verified',
-            verifiedAt: new Date()
-        }
+      data: {
+        userId: pUser.userId,
+        verificationStatus: Math.random() > 0.8 ? 'pending' : 'verified',
+        verifiedAt: new Date()
+      }
     });
 
     // System Analytics: Red Flags & Red Button Events
     await prisma.redFlagLog.create({
-        data: {
-            userId: mUser.userId,
-            triggerSource: Math.random() > 0.5 ? 'Sleep' : 'Journal',
-            severity: Math.random() > 0.7 ? 'Critical' : 'High',
-            createdAt: new Date(Date.now() - 86400000 * Math.floor(Math.random() * 5))
-        }
+      data: {
+        userId: mUser.userId,
+        triggerSource: Math.random() > 0.5 ? 'Sleep' : 'Journal',
+        severity: Math.random() > 0.7 ? 'Critical' : 'High',
+        createdAt: new Date(Date.now() - 86400000 * Math.floor(Math.random() * 5))
+      }
     });
 
     // Occasional resolved emergency
     if (Math.random() > 0.5) {
-        await prisma.redButtonEvent.create({
-            data: {
-                userId: mUser.userId,
-                emergencyStatus: 'resolved',
-                triggeredAt: new Date(Date.now() - 86400000 * 3)
-            }
-        });
+      await prisma.redButtonEvent.create({
+        data: {
+          userId: mUser.userId,
+          emergencyStatus: 'resolved',
+          triggeredAt: new Date(Date.now() - 86400000 * 3)
+        }
+      });
     }
   }
 
@@ -363,28 +364,28 @@ async function main() {
 
   // 7. Community Posts (Media Rich Sister Stories)
   const posts = [
-    { 
-        user: 'gauri@gmail.com', 
-        title: 'Second child on the way!', 
-        body: 'Balancing Kochi life with a toddler while pregnant. Setting up the nursery today!',
-        image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=800'
-    },
-    { 
-        user: 'anjali@gmail.com', 
-        title: 'Dealing with Morning Sickness', 
-        body: 'Anyone else in Trivandrum struggling with the heat and nausea? Ginger tea works wonders.',
-        image: 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80&w=800'
-    },
-    { 
-        user: 'fathima@gmail.com', 
-        title: 'Traditional Diet Tips', 
-        body: 'My mother-in-law is insisting on specific Malabar postpartum recipes. Any favorites?' 
+    {
+      user: 'gauri@gmail.com',
+      title: 'Second child on the way!',
+      body: 'Balancing Kochi life with a toddler while pregnant. Setting up the nursery today!',
+      image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80&w=800'
     },
     {
-        user: 'anjali@gmail.com',
-        title: 'MIRACLE CURE for everything!',
-        body: 'Buy my untested homemade postpartum supplements. DM for price! #miracle #sale',
-        isFlagged: true
+      user: 'anjali@gmail.com',
+      title: 'Dealing with Morning Sickness',
+      body: 'Anyone else in Trivandrum struggling with the heat and nausea? Ginger tea works wonders.',
+      image: 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80&w=800'
+    },
+    {
+      user: 'fathima@gmail.com',
+      title: 'Traditional Diet Tips',
+      body: 'My mother-in-law is insisting on specific Malabar postpartum recipes. Any favorites?'
+    },
+    {
+      user: 'anjali@gmail.com',
+      title: 'MIRACLE CURE for everything!',
+      body: 'Buy my untested homemade postpartum supplements. DM for price! #miracle #sale',
+      isFlagged: true
     }
   ];
 
@@ -404,13 +405,13 @@ async function main() {
       });
 
       if (post.image) {
-          await prisma.postAttachment.create({
-              data: {
-                  postId: createdPost.postId,
-                  fileUrl: post.image,
-                  fileType: 'image'
-              }
-          });
+        await prisma.postAttachment.create({
+          data: {
+            postId: createdPost.postId,
+            fileUrl: post.image,
+            fileType: 'image'
+          }
+        });
       }
     }
   }
@@ -418,85 +419,85 @@ async function main() {
   // 8. Consultations (Pending & History)
   const gauri = await prisma.user.findUnique({ where: { email: 'gauri@gmail.com' } });
   const kavitha = await prisma.user.findUnique({ where: { email: 'kavitha.nair@skhospital.com' } });
-  
+
   if (kavitha) {
-      const kavithaExpert = await prisma.expert.findUnique({ where: { userId: kavitha.userId } });
-      if (gauri && kavithaExpert) {
-          await prisma.consultation.createMany({
-              data: [
-                  {
-                      userId: gauri.userId,
-                      expertId: kavithaExpert.expertId,
-                      dateTime: new Date(Date.now() - 86400000 * 5), // 5 days ago
-                      status: 'Done',
-                      clinicalNotes: 'Initial checkup completed. Vitals normal. Patient reports mild nausea in mornings but otherwise healthy. Prescribed folic acid and discussed dietary supplements.',
-                      patientComment: 'First consultation for the new pregnancy.'
-                  },
-                  {
-                      userId: gauri.userId,
-                      expertId: kavithaExpert.expertId,
-                      dateTime: new Date(Date.now() - 86400000 * 10), // 10 days ago
-                      status: 'Done',
-                      clinicalNotes: 'Discussed exercise routine. Gauri is active but concerned about core stability. Recommended gentle prenatal yoga and walking. Monitoring blood pressure regularly.',
-                      patientComment: 'Regular checkup.'
-                  },
-                  {
-                      userId: gauri.userId,
-                      expertId: kavithaExpert.expertId,
-                      dateTime: new Date(Date.now() + 86400000 * 3), // 3 days from now
-                      status: 'Pending',
-                      patientComment: 'Having some back pain, would like to discuss safe stretches.'
-                  }
-              ]
-          });
-      }
+    const kavithaExpert = await prisma.expert.findUnique({ where: { userId: kavitha.userId } });
+    if (gauri && kavithaExpert) {
+      await prisma.consultation.createMany({
+        data: [
+          {
+            userId: gauri.userId,
+            expertId: kavithaExpert.expertId,
+            dateTime: new Date(Date.now() - 86400000 * 5), // 5 days ago
+            status: 'Done',
+            clinicalNotes: 'Initial checkup completed. Vitals normal. Patient reports mild nausea in mornings but otherwise healthy. Prescribed folic acid and discussed dietary supplements.',
+            patientComment: 'First consultation for the new pregnancy.'
+          },
+          {
+            userId: gauri.userId,
+            expertId: kavithaExpert.expertId,
+            dateTime: new Date(Date.now() - 86400000 * 10), // 10 days ago
+            status: 'Done',
+            clinicalNotes: 'Discussed exercise routine. Gauri is active but concerned about core stability. Recommended gentle prenatal yoga and walking. Monitoring blood pressure regularly.',
+            patientComment: 'Regular checkup.'
+          },
+          {
+            userId: gauri.userId,
+            expertId: kavithaExpert.expertId,
+            dateTime: new Date(Date.now() + 86400000 * 3), // 3 days from now
+            status: 'Pending',
+            patientComment: 'Having some back pain, would like to discuss safe stretches.'
+          }
+        ]
+      });
+    }
   }
 
   const anjali = await prisma.user.findUnique({ where: { email: 'anjali@gmail.com' } });
   const saji = await prisma.user.findUnique({ where: { email: 'saji.v@astermedcity.com' } });
   if (saji) {
-      const sajiExpert = await prisma.expert.findUnique({ where: { userId: saji.userId } });
-      if (anjali && sajiExpert) {
-          await prisma.consultation.createMany({
-              data: [
-                  {
-                      userId: anjali.userId,
-                      expertId: sajiExpert.expertId,
-                      dateTime: new Date(Date.now() + 86400000 * 1), // Tomorrow
-                      status: 'Pending',
-                      patientComment: 'Anxious about returning to work. Need advice.'
-                  },
-                  {
-                      userId: anjali.userId,
-                      expertId: sajiExpert.expertId,
-                      dateTime: new Date(Date.now() + 86400000 * 2),
-                      status: 'Pending'
-                  },
-                  {
-                      userId: anjali.userId,
-                      expertId: sajiExpert.expertId,
-                      dateTime: new Date(Date.now() + 86400000 * 4),
-                      status: 'Pending'
-                  },
-                  {
-                      userId: anjali.userId,
-                      expertId: sajiExpert.expertId,
-                      dateTime: new Date(Date.now() - 86400000 * 2), // 2 days ago
-                      status: 'Done',
-                      clinicalNotes: 'Anjali expressed concerns regarding sleep deprivation impacts. Screened for PPD symptoms; scores are elevated but within manageable range. Encouraged partner involvement for nighttime feeds. Scheduled follow-up in 2 weeks.',
-                      patientComment: 'Feeling very tired and emotional.'
-                  },
-                  {
-                      userId: anjali.userId,
-                      expertId: sajiExpert.expertId,
-                      dateTime: new Date(Date.now() - 86400000 * 8), // 8 days ago
-                      status: 'Done',
-                      clinicalNotes: 'Discussed transition back to work. Anxiety scores are moderate. Developed a phased return-to-work plan and boundary-setting strategies. Focus on mindfulness exercises.',
-                      patientComment: 'Work-related stress.'
-                  }
-              ]
-          });
-      }
+    const sajiExpert = await prisma.expert.findUnique({ where: { userId: saji.userId } });
+    if (anjali && sajiExpert) {
+      await prisma.consultation.createMany({
+        data: [
+          {
+            userId: anjali.userId,
+            expertId: sajiExpert.expertId,
+            dateTime: new Date(Date.now() + 86400000 * 1), // Tomorrow
+            status: 'Pending',
+            patientComment: 'Anxious about returning to work. Need advice.'
+          },
+          {
+            userId: anjali.userId,
+            expertId: sajiExpert.expertId,
+            dateTime: new Date(Date.now() + 86400000 * 2),
+            status: 'Pending'
+          },
+          {
+            userId: anjali.userId,
+            expertId: sajiExpert.expertId,
+            dateTime: new Date(Date.now() + 86400000 * 4),
+            status: 'Pending'
+          },
+          {
+            userId: anjali.userId,
+            expertId: sajiExpert.expertId,
+            dateTime: new Date(Date.now() - 86400000 * 2), // 2 days ago
+            status: 'Done',
+            clinicalNotes: 'Anjali expressed concerns regarding sleep deprivation impacts. Screened for PPD symptoms; scores are elevated but within manageable range. Encouraged partner involvement for nighttime feeds. Scheduled follow-up in 2 weeks.',
+            patientComment: 'Feeling very tired and emotional.'
+          },
+          {
+            userId: anjali.userId,
+            expertId: sajiExpert.expertId,
+            dateTime: new Date(Date.now() - 86400000 * 8), // 8 days ago
+            status: 'Done',
+            clinicalNotes: 'Discussed transition back to work. Anxiety scores are moderate. Developed a phased return-to-work plan and boundary-setting strategies. Focus on mindfulness exercises.',
+            patientComment: 'Work-related stress.'
+          }
+        ]
+      });
+    }
   }
 
   console.log('--- Consultations and Community Posts completed ---');

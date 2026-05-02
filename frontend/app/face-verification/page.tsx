@@ -60,7 +60,7 @@ export default function FaceVerificationPage() {
             const data = await res.json();
             
             if (!data.success) {
-                throw new Error("Could not start secure session");
+                throw new Error(data.message || "Could not start secure session");
             }
             
             sessionIdRef.current = data.sessionId;
