@@ -1,34 +1,37 @@
 import cv2
 import numpy as np
-# Stub for Silent-Face-Anti-Spoofing and CDCN
-# The user needs to supply the model/weights or API key as offered.
+from deepface import DeepFace
 
 class LivenessDetector:
-    def __init__(self, use_api=False, api_key=None):
-        self.use_api = use_api
-        self.api_key = api_key
-        
-        # In a fully realized local setup, this is where we'd do:
-        # self.model = load_silent_face_model('models/AntiSpoofing_bin_1.5_128.pth')
-        # OR load_cdcn_model('models/CDCNpp_OULU_NPU.pth')
+    def __init__(self):
+        # DeepFace handles the model loading internally when anti_spoofing=True is passed to analyze or extract_faces
         pass
 
     def predict(self, frame):
         """
-        Takes a BGR image (OpenCV format) and runs Passive Liveness Detection.
+        Takes a BGR image (OpenCV format) and runs Passive Liveness Detection using DeepFace (Silent-Face-Anti-Spoofing).
         Returns: (liveness_score, is_live_boolean)
         """
-        if self.use_api and self.api_key:
-            # For remote hybrid systems
-            # Example API Request to FaceIO / AWS Rekognition / Regula
-            # response = requests.post(..., headers={'Auth': self.api_key})
-            return 0.99, True
-        
-        # Local model simulation:
-        # If we had the PyTorch models loaded:
-        # result = self.model.predict(frame)
-        # return result.score, (result.score > 0.85)
+        try:
+            # We use extract_faces with anti_spoofing=True
+            # This will use the Silent-Face-Anti-Spoofing model internally
+            results = DeepFace.extract_faces(
+                img_path=frame, 
+                enforce_detection=False, 
+                anti_spoofing=True
+            )
+            
+            if not results:
+                return 0.0, False
+            
+            # DeepFace returns is_real boolean in the results
+            is_live = results[0].get("is_real", False)
+            # DeepFace doesn't always expose a raw score easily in the high-level API for anti-spoofing, 
+            # but we can return 1.0/0.0 based on the boolean.
+            score = 1.0 if is_live else 0.0
+            
+            return score, is_live
 
-        # Let's default to a pass for now so the pipeline continues
-        # until the user provides the specific PyTorch weights or API key
-        return 0.95, True
+        except Exception as e:
+            print(f"Liveness detection error: {e}")
+            return 0.0, False
