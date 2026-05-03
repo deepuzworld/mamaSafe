@@ -54,7 +54,7 @@ export default function Home() {
                         transition={{ delay: 0.3 }}
                         className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto"
                     >
-                        <a href="/register" className="px-10 py-6 bg-slate-900 text-white rounded-[2rem] font-black text-lg shadow-2xl shadow-emerald-900/10 hover:bg-emerald-600 transition-all hover:scale-[1.02] active:scale-98 flex items-center justify-center gap-3 group">
+                        <a href="/login" className="px-10 py-6 bg-slate-900 text-white rounded-[2rem] font-black text-lg shadow-2xl shadow-emerald-900/10 hover:bg-emerald-600 transition-all hover:scale-[1.02] active:scale-98 flex items-center justify-center gap-3 group">
                             Secure Entry <Sparkles size={20} className="group-hover:rotate-12" />
                         </a>
                         <a href="#features" className="px-10 py-6 bg-white text-slate-900 rounded-[2rem] font-black text-lg border border-slate-100 shadow-xl shadow-slate-200/50 hover:bg-slate-50 transition-all flex items-center justify-center gap-3">
