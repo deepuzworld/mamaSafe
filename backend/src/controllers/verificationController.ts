@@ -20,7 +20,7 @@ export const startVerificationSession = async (req: Request, res: Response) => {
         const sessionId = `sess_${crypto.randomBytes(8).toString('hex')}`;
         
         // Random hybrid challenges
-        const availableChallenges = ['smile', 'surprised', 'neutral'];
+        const availableChallenges = ['smile'];
         // Pick one random challenge layer for simplicity, though the frontend handles multiple
         const challenge = [availableChallenges[Math.floor(Math.random() * availableChallenges.length)] || 'smile'];
 

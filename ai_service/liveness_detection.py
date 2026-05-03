@@ -26,9 +26,8 @@ class LivenessDetector:
             
             # DeepFace returns is_real boolean in the results
             is_live = results[0].get("is_real", False)
-            # DeepFace doesn't always expose a raw score easily in the high-level API for anti-spoofing, 
-            # but we can return 1.0/0.0 based on the boolean.
-            score = 1.0 if is_live else 0.0
+            # Use antispoof_score if available for a moving percentage, otherwise default to boolean mapping
+            score = results[0].get("antispoof_score", 1.0 if is_live else 0.0)
             
             return score, is_live
 
